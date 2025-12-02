@@ -20,8 +20,7 @@
     <meta name="twitter:card" content="summary_large_image">
     
     <!-- Chosen Palette: Calm Harmony -->
-    <!-- Application Structure Plan: Single-page landing site. Flow: Hero -> Isu Sosial -> Langkah Pertama -> Materi Edukasi -> Cari Bantuan -> Lokasi Bantuan -> Tentang Proyek. Increased header spacing. -->
-    <!-- Visualization & Content Choices: Text/Accordion for issues; Cards/Links for resources; Text/Lists/Button for first steps; Buttons (copy + link) for contacts; Embedded iframes for maps; Links for sharing. -->
+    <!-- Application Structure Plan: Single-page landing site. Flow: Hero -> Isu Sosial -> Langkah Pertama -> Materi Edukasi -> Cari Bantuan -> Pengaduan (Live Form & Connected Graph) -> Lokasi Bantuan -> Tentang Proyek. -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,28 +29,36 @@
     
     <!-- AOS Library for Scroll Animations -->
     <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+    <!-- Chart.js Library for Data Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #FDFBF8; /* Warm off-white base */
-            line-height: 1.6; /* Increased default line height */
-            letter-spacing: 0.01em; /* Slight increase in letter spacing */
+            color: #374151; /* Gray-700 */
+            line-height: 1.6;
+            letter-spacing: 0.01em;
         }
+
         /* Navbar scroll effect */
         #header {
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
-             background-color: rgba(255, 255, 255, 0.8); /* Initial semi-transparent */
+             background-color: rgba(255, 255, 255, 0.8);
              backdrop-filter: blur(10px);
         }
         #header.scrolled {
-            background-color: rgba(255, 255, 255, 0.95); /* More opaque white */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Standard shadow */
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
+
         /* Link hover effect */
         nav a {
             position: relative;
-            padding-bottom: 4px; /* Space for underline */
+            padding-bottom: 4px;
+            color: #4b5563;
+            transition: color 0.3s ease;
         }
         nav a::after {
             content: "";
@@ -59,73 +66,75 @@
             width: 0%;
             height: 2px;
             left: 0;
-            bottom: 0px; /* Position underline */
-            background: #3b82f6; /* Blue-500 */
+            bottom: 0px;
+            background: #3b82f6;
             transition: width 0.3s ease;
+        }
+        nav a:hover {
+            color: #2563eb;
         }
         nav a:hover::after {
             width: 100%;
         }
-        /* Hero Section Gradient - stays */
-        .hero-gradient {
-            /* Layer both gradient and pattern */
-            background-image:
-                url("https://raw.githubusercontent.com/ChocoToppy/PortalASA/6e1ac0805ce394b9bcc5d7b3c190c19d80af1d47/assets/topography.svg"),
-                linear-gradient(135deg, rgba(235, 245, 255, 0.8) 0%, rgba(254, 235, 235, 0.8) 100%);
 
-            /* Blend softly so pattern doesn't overpower */
-            background-blend-mode: overlay; /* or try multiply for darker */
-            /* Ensure the pattern tiles nicely and gradient covers full area */
-            background-repeat: repeat, no-repeat;
-            background-size: auto, cover;
-            background-position: center;
-    
-            /* Optional: slight animation to make gradient feel alive */
-            animation: gradientShift 50s ease infinite;
-
+        /* Hero Section with SVG Pattern */
+        #hero {
+             position: relative;
+             overflow: hidden;
+             background: linear-gradient(135deg, #ebf5ff 0%, #fef2f2 100%);
+        }
+        
+        /* The SVG Pattern Layer */
+        #hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://raw.githubusercontent.com/ChocoToppy/PortalASA/6e1ac0805ce394b9bcc5d7b3c190c19d80af1d47/assets/topography.svg');
+            background-repeat: repeat;
+            background-size: 400px; 
+            opacity: 0.4; 
+            mix-blend-mode: multiply; 
+            z-index: 0; 
+            pointer-events: none; 
         }
 
-    @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Ensure hero content sits above the background */
+        #hero > div {
+            position: relative;
+            z-index: 10;
         }
 
-        /* New Gradients for sections */
+        /* Section Gradients */
         .gradient-blue-light {
-            background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe); /* sky-50 to sky-100 */
+            background: linear-gradient(to bottom right, #f0f9ff, #e0f2fe); 
         }
         .gradient-slate-light {
-            background: linear-gradient(to bottom left, #f8fafc, #eef2f7); /* slate-50 to adjusted lighter slate */
+            background: linear-gradient(to bottom left, #f8fafc, #eef2f7); 
         }
+
         /* Accordion specific styles */
         .accordion-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s ease-out; 
-            background-color: #ffffff; 
+            background-color: #ffffff;
         }
         .accordion-content.open {
             max-height: 1000px; 
             transition: max-height 0.5s ease-in; 
         }
-        /* General text and brand colors */
-        .section-title {
-            color: #2c3e50; /* Dark Slate Blue */
-        }
-        .brand-color-main {
-            color: #3b82f6; /* Blue-500 */
-        }
-        .brand-bg-main {
-            background-color: #3b82f6; /* Blue-500 */
-        }
-        .brand-bg-secondary {
-            background-color: #e0f2fe; /* Sky-100 */
-        }
-        .brand-text-secondary {
-            color: #0c4a6e; /* Sky-900 */
-        }
-        /* List styling */
+
+        /* General Colors */
+        .section-title { color: #1f2937; }
+        .brand-color-main { color: #3b82f6; }
+        .brand-bg-main { background-color: #3b82f6; }
+        .brand-bg-secondary { background-color: #e0f2fe; }
+        .brand-text-secondary { color: #0c4a6e; }
+
+        /* Lists */
         .accordion-content ul, #langkah-pertama ul {
             list-style-position: inside;
             padding-left: 0.5rem;
@@ -133,166 +142,124 @@
          .accordion-content li, #langkah-pertama li {
             margin-bottom: 0.5rem;
          }
-         #langkah-pertama li {
-             display: list-item; 
-         }
+         #langkah-pertama li { display: list-item; }
 
-        /* Map container styling */
+        /* Map container */
         .map-container {
-            position: relative;
-            overflow: hidden;
-            padding-top: 60%; 
-            border-radius: 0.75rem; 
-            width: 100%; 
+            position: relative; overflow: hidden; padding-top: 60%; 
+            border-radius: 0.75rem; width: 100%; 
         }
         .map-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
+            filter: grayscale(30%);
+            transition: filter 0.3s ease;
         }
+         .map-container:hover iframe {
+            filter: grayscale(0%);
+         }
+
         /* Share buttons */
         .share-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center; /* Center content */
-            padding: 0.5rem 1rem;
-            margin: 0.25rem 0; /* Adjusted margin for vertical stacking */
-            border-radius: 0.375rem;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
-            width: 160px; /* Give a fixed width for consistency */
-            max-width: 100%;
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.5rem 1rem; margin: 0.25rem 0; border-radius: 0.375rem;
+            text-decoration: none; font-weight: 500; transition: background-color 0.3s ease;
+            width: 160px; max-width: 100%;
         }
-        @media (min-width: 640px) { /* sm breakpoint */
-             .share-button {
-                 margin: 0 0.25rem; /* Revert to horizontal margin */
-                 width: auto; /* Revert to auto width */
-             }
+        @media (min-width: 640px) { 
+             .share-button { margin: 0 0.25rem; width: auto; }
         }
-        .share-wa {
-            background-color: #25D366;
-            color: white;
-        }
-        .share-wa:hover {
-            background-color: #1DA851;
-        }
-        .share-fb {
-            background-color: #1877F2;
-            color: white;
-        }
-        .share-fb:hover {
-            background-color: #135FBC;
-        }
-        .share-button svg {
-            width: 1.25rem; 
-            height: 1.25rem; 
-            margin-right: 0.5rem; 
-            fill: currentColor;
-        }
+        .share-wa { background-color: #25D366; color: white; }
+        .share-wa:hover { background-color: #1DA851; }
+        .share-fb { background-color: #1877F2; color: white; }
+        .share-fb:hover { background-color: #135FBC; }
+        .share-button svg { width: 1.25rem; height: 1.25rem; margin-right: 0.5rem; fill: currentColor; }
+
         /* Website & Copy buttons */
         .website-button {
-             margin-top: 0.5rem;
-             border: 1px solid #3b82f6; 
-             color: #3b82f6; 
-             background-color: white;
-             display: inline-block; 
-             text-align: center; 
+             margin-top: 0.5rem; border: 1px solid #3b82f6; color: #3b82f6; 
+             background-color: white; display: inline-block; text-align: center; 
+             transition: background-color 0.3s ease, color 0.3s ease;
         }
-         .website-button:hover {
-            background-color: #eff6ff; 
-         }
-         .copy-button {
+         .website-button:hover { background-color: #eff6ff; }
+
+         /* Smart Contact Button Styles */
+         .smart-contact-btn { 
              display: inline-block; 
              text-align: center; 
+             cursor: pointer;
+             user-select: none;
          }
-         /* Isu Sosial cards - refined for glitch fix */
+         /* State when copied */
+         .smart-contact-btn.copied {
+            background-color: #10b981 !important; 
+            color: white !important;
+         }
+
+         /* Cards */
          .isu-card {
-             border-left: 5px solid #3b82f6; /* Blue-500 */
-             background-color: #f8fafc; /* slate-50 */
+             border-left: 5px solid #3b82f6; background-color: #ffffff;
              border-radius: 0.75rem; 
-             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
              transition: transform 0.3s ease, box-shadow 0.3s ease; 
              overflow: hidden; 
-             border: 1px solid #e2e8f0; /* slate-200 */
+             border: 1px solid #e5e7eb;
          }
          .isu-card:hover {
              transform: translateY(-5px); 
-             box-shadow: 0 15px 20px -3px rgba(0, 0, 0, 0.15), 0 6px 8px -2px rgba(0, 0, 0, 0.08); 
+             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
          }
-         .isu-card-trigger-area { 
-             padding: 1.5rem; /* p-6 */
-             cursor: pointer; 
-         }
-        
+         .isu-card-trigger-area { padding: 1.5rem; cursor: pointer; }
          .isu-icon-bg {
-             background-color: #bfdbfe; /* blue-200 */
-             color: #1d4ed8; /* blue-700 */
-             width: 2.5rem; 
-             height: 2.5rem; 
-             border-radius: 9999px; 
-             display: flex;
-             align-items: center;
-             justify-content: center;
-             flex-shrink: 0;
+             background-color: #dbeafe; color: #1d4ed8;
+             width: 2.5rem; height: 2.5rem; border-radius: 9999px; 
+             display: flex; align-items: center; justify-content: center; flex-shrink: 0;
          }
-         /* Styling for material cards */
-         .material-card {
+         
+         .material-card, .contact-card {
             border-radius: 0.75rem; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+             border: 1px solid #e5e7eb;
          }
-         .material-card:hover {
+         .material-card:hover, .contact-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 10px -1px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.08);
          }
-         .contact-card {
-            border-radius: 0.75rem; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-         }
-         .contact-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 10px -1px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.08);
-         }
-         /* Footer gradient */
+
          .footer-gradient {
-            background: linear-gradient(to top, #1f2937, #374151); /* gray-800 to gray-700 */
+            background: linear-gradient(to top, #111827, #1f2937);
          }
     </style>
 </head>
-<body class="text-gray-800">
+<body class="text-gray-700">
 
     <!-- Header / Navigation -->
-    <header id="header" class="fixed top-0 left-0 right-0 z-50"> <!-- Initial state handled by JS -->
+    <header id="header" class="fixed top-0 left-0 right-0 z-50"> 
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#hero" class="flex items-center text-xl font-bold section-title">
                 <img src="https://github.com/ChocoToppy/PortalASA/blob/master/assets/images/Logo_ASA.png?raw=true" alt="Logo Portal ASA" class="h-8 mr-2 object-contain" loading="lazy"> 
                 Portal <span class="brand-color-main ml-1">ASA</span> 
             </a>
-            <!-- Increased Spacing -->
-            <nav class="hidden md:flex space-x-5 lg:space-x-5"> 
-                <a href="#isu" class="text-gray-700 hover:text-blue-600 font-medium transition duration-300">Isu Sosial</a>
-                <a href="#langkah-pertama" class="text-gray-700 hover:text-blue-600 font-medium transition duration-300">Langkah Pertama</a>
-                <a href="#materi" class="text-gray-700 hover:text-blue-600 font-medium transition duration-300">Materi Edukasi</a>
-                <a href="#bantuan" class="text-gray-700 hover:text-blue-600 font-medium transition duration-300">Cari Bantuan</a>
-                <a href="#lokasi" class="text-gray-700 hover:text-blue-600 font-medium transition duration-300">Lokasi Bantuan</a>
+            <nav class="hidden md:flex space-x-10 lg:space-x-12"> 
+                <a href="#isu" class="font-medium transition duration-300">Isu Sosial</a>
+                <a href="#langkah-pertama" class="font-medium transition duration-300">Langkah Pertama</a>
+                <a href="#materi" class="font-medium transition duration-300">Materi Edukasi</a>
+                <a href="#bantuan" class="font-medium transition duration-300">Cari Bantuan</a>
+                <a href="#pengaduan" class="font-medium transition duration-300">Lapor / Pengaduan</a>
+                <a href="#lokasi" class="font-medium transition duration-300">Lokasi Bantuan</a>
             </nav>
             <a href="#bantuan" class="hidden md:block bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                 Kontak Darurat
             </a>
             <button id="mobile-menu-button" class="md:hidden text-2xl text-gray-700">☰</button>
         </div>
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 bg-white shadow-inner">
-            <a href="#isu" class="block py-2 text-gray-700 hover:text-blue-600 font-medium">Isu Sosial</a>
-            <a href="#langkah-pertama" class="block py-2 text-gray-700 hover:text-blue-600 font-medium">Langkah Pertama</a>
-            <a href="#materi" class="block py-2 text-gray-700 hover:text-blue-600 font-medium">Materi Edukasi</a>
-            <a href="#bantuan" class="block py-2 text-gray-700 hover:text-blue-600 font-medium">Cari Bantuan</a>
-            <a href="#lokasi" class="block py-2 text-gray-700 hover:text-blue-600 font-medium">Lokasi Bantuan</a>
+            <a href="#isu" class="block py-2 font-medium">Isu Sosial</a>
+            <a href="#langkah-pertama" class="block py-2 font-medium">Langkah Pertama</a>
+            <a href="#materi" class="block py-2 font-medium">Materi Edukasi</a>
+            <a href="#bantuan" class="block py-2 font-medium">Cari Bantuan</a>
+            <a href="#pengaduan" class="block py-2 font-medium">Lapor / Pengaduan</a>
+            <a href="#lokasi" class="block py-2 font-medium">Lokasi Bantuan</a>
             <a href="#bantuan" class="block mt-2 text-center bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 shadow-md">
                 Kontak Darurat
             </a>
@@ -300,8 +267,8 @@
     </header>
 
     <main>
-        <!-- Hero Section -->
-        <section id="hero" class="min-h-screen flex items-center pt-20 hero-gradient">
+        <!-- Hero Section with SVG Background -->
+        <section id="hero" class="min-h-screen flex items-center pt-20">
             <div class="container mx-auto px-6 text-center">
                 <h1 class="text-4xl md:text-6xl font-bold section-title leading-tight mb-4" data-aos="fade-up">
                     Anda Tidak <span class="brand-color-main">Sendirian.</span><br> Bantuan Selalu Tersedia.
@@ -310,7 +277,7 @@
                     Portal Informasi Sosial untuk Aksi Preventif di Kecamatan Semarang Timur. Temukan informasi, kenali tanda-tanda, dan dapatkan bantuan yang Anda butuhkan.
                 </p>
                 <div class="space-y-4 sm:space-y-0 sm:space-x-4" data-aos="fade-up" data-aos-delay="400">
-                     <a href="#bantuan" class="bg-blue-500 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-blue-600 transition duration-300 inline-block shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                     <a href="#bantuan" class="bg-blue-500 text-white font-bold px-8 py-4 rounded-lg hover:bg-blue-600 transition duration-300 inline-block shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                         Lihat Kontak Bantuan
                     </a>
                     <a href="#langkah-pertama" class="border-2 border-blue-500 text-blue-500 font-bold px-8 py-4 rounded-lg text-lg hover:bg-blue-50 transition duration-300 inline-block hover:shadow-md transform hover:-translate-y-0.5">
@@ -331,7 +298,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
                     <!-- Isu Card: Bullying -->
                     <div class="isu-card" data-aos="fade-up" data-aos-delay="100">
-                        <div class="isu-card-trigger-area">
+                       <div class="isu-card-trigger-area">
                             <div class="flex items-center mb-4">
                                 <div class="isu-icon-bg text-xl">😠</div>
                                 <h3 class="ml-4 text-xl font-bold section-title">Perundungan (Bullying)</h3>
@@ -460,7 +427,7 @@
 
          <!-- Langkah Pertama Section -->
         <section id="langkah-pertama" class="py-20 gradient-blue-light">
-             <div class="container mx-auto px-6 max-w-4xl">
+            <div class="container mx-auto px-6 max-w-4xl">
                 <div class="text-center mb-12" data-aos="fade-up">
                     <h2 class="text-3xl md:text-4xl font-bold section-title">Apa yang Harus Dilakukan? (Langkah Pertama)</h2>
                     <p class="text-gray-600 mt-2 max-w-2xl mx-auto leading-relaxed tracking-wide">Jika Anda mengalami, menyaksikan, atau mengetahui adanya isu sosial, berikut adalah langkah awal yang bisa Anda ambil.</p>
@@ -472,9 +439,10 @@
                             <li><strong>Prioritaskan Keselamatan:</strong> Segera cari tempat yang aman atau orang yang bisa melindungi Anda.</li>
                             <li>
                                 <strong>Hubungi Bantuan Cepat:</strong> Gunakan kontak darurat Polsek di bawah ini atau berteriak minta tolong jika memungkinkan.
-                                <button data-number="0246715632" class="copy-button mt-2 text-sm bg-red-500 text-white font-semibold px-4 py-1 rounded-md hover:bg-red-600 transition duration-300 inline-block w-full sm:w-auto shadow">
+                                <!-- Hybrid Smart Button for Polsek -->
+                                <a href="tel:0246715632" data-number="0246715632" class="smart-contact-btn mt-2 text-sm bg-red-500 text-white font-semibold px-4 py-1 rounded-md hover:bg-red-600 transition duration-300 inline-block w-full sm:w-auto shadow">
                                     Salin No Polsek - (024) 6715632
-                                </button>
+                                </a>
                             </li>
                             <li><strong>Jangan Menyendiri:</strong> Jika sudah aman, hubungi teman, keluarga, atau kontak bantuan lain yang tertera.</li>
                         </ul>
@@ -494,7 +462,7 @@
 
         <!-- Materi Edukasi & Sumber Daya Section -->
         <section id="materi" class="py-20 gradient-slate-light">
-             <div class="container mx-auto px-6">
+            <div class="container mx-auto px-6">
                 <div class="text-center mb-12" data-aos="fade-up">
                     <h2 class="text-3xl md:text-4xl font-bold section-title">Materi Edukasi & Sumber Daya</h2>
                     <p class="text-gray-600 mt-2 max-w-2xl mx-auto leading-relaxed tracking-wide">Perdalam pemahaman Anda dengan materi-materi edukasi dan sumber daya eksternal. Klik untuk mengakses.</p>
@@ -508,7 +476,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Materi Internal (PDF)</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Stop Bullying! Mengatasi & Mencegah</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Panduan lengkap mengenai perundungan, termasuk cara mengenali, mengatasi, dan mencegahnya.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Panduan lengkap mengenai perundungan.</p>
                                 <a href="https://drive.google.com/file/d/1QCQTjnspWzYCOg8GkGoly93XkgJmXUL0/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Baca Materi
                                 </a>
@@ -516,7 +484,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Video Edukasi (YouTube)</p>
                                 <h4 class="font-bold text-gray-800 mb-2">KPAI: STOP BULLYING PADA ANAK</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Video sosialisasi resmi dari KPAI untuk menghentikan perundungan pada anak.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Video sosialisasi resmi dari KPAI.</p>
                                 <a href="https://www.youtube.com/watch?v=Kxq0EKrk8Hc" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Tonton Video
                                 </a>
@@ -524,7 +492,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Situs Resmi</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Komisi Perlindungan Anak Indonesia</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Situs resmi lembaga negara yang mengawasi perlindungan anak di Indonesia.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Situs resmi lembaga pengawas perlindungan anak.</p>
                                 <a href="https://www.kpai.go.id" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Kunjungi Situs
                                 </a>
@@ -532,7 +500,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Artikel Resmi</p>
                                 <h4 class="font-bold text-gray-800 mb-2">UNICEF: Apa itu bullying?</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Penjelasan mendalam dari UNICEF mengenai apa itu perundungan dan cara mengatasinya.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Penjelasan mendalam dari UNICEF.</p>
                                 <a href="https://www.unicef.org/indonesia/id/child-protection/apa-itu-bullying-dan-cara-mengatasinya" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Kunjungi Situs
                                 </a>
@@ -547,7 +515,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Video Edukasi (YouTube)</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Memahami UU TPKS (KemenPPPA)</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Video komunikasi publik dari Kementerian PPPA yang menjelaskan isi UU TPKS.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Video komunikasi publik dari KemenPPPA.</p>
                                 <a href="https://www.youtube.com/watch?v=DgwZPhnww6U" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Tonton Video
                                 </a>
@@ -555,7 +523,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Situs Resmi</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Komnas Perempuan</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Situs resmi Komisi Nasional Anti Kekerasan terhadap Perempuan.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Situs resmi Komnas Anti Kekerasan terhadap Perempuan.</p>
                                 <a href="https://www.komnasperempuan.go.id" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Kunjungi Situs
                                 </a>
@@ -563,7 +531,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Artikel</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Pelecehan Seksual di Lingkungan Kerja</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Artikel yang menjelaskan bentuk-bentuk dan dampak pelecehan seksual di tempat kerja.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Penjelasan bentuk dan dampak pelecehan di tempat kerja.</p>
                                 <a href="https://opini.kemenkeu.go.id/article/read/pelecehan-seksual-di-lingkungan-kerja" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Baca Artikel
                                 </a>
@@ -571,7 +539,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Situs Bantuan Hukum</p>
                                 <h4 class="font-bold text-gray-800 mb-2">LBH APIK Jakarta</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Lembaga bantuan hukum untuk perempuan dan anak korban kekerasan.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Pendampingan hukum gratis bagi korban kekerasan.</p>
                                 <a href="https://www.lbhapik.org" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Kunjungi Situs
                                 </a>
@@ -593,7 +561,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Situs Pelaporan</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Layanan SAPA 129</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Portal resmi pemerintah untuk melaporkan semua jenis kekerasan.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Portal resmi pemerintah untuk melapor.</p>
                                 <a href="https://laporsapa129.kemenpppa.go.id" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Kunjungi Situs
                                 </a>
@@ -601,7 +569,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Artikel</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Melindungi Diri dari KDRT</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Panduan praktis mengenali KDRT dan langkah-langkah aman keluar dari situasi.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Panduan mengenali KDRT & langkah aman.</p>
                                 <a href="https://www.alodokter.com/melindungi-diri-dari-kekerasan-dalam-rumah-tangga" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Baca Artikel
                                 </a>
@@ -609,7 +577,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Artikel Panduan</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Cara Melaporkan KDRT (Kumparan)</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Menjelaskan berbagai jalur pelaporan KDRT secara rinci.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Penjelasan jalur pelaporan KDRT.</p>
                                 <a href="https://m.kumparan.com/kumparanwoman/cara-melaporkan-kdrt-untuk-mendapat-pertolongan-22kWoXaU9Rc" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Baca Artikel
                                 </a>
@@ -623,7 +591,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Video Edukasi (YouTube)</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Dialog Psikolog Metro TV: Kasus Inses</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Pembahasan kasus inses dengan penjelasan dari psikolog.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Pembahasan kasus inses dengan psikolog.</p>
                                 <a href="https://www.youtube.com/watch?v=U5-z2DVqTKI" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Tonton Video
                                 </a>
@@ -639,7 +607,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Artikel</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Inses dan Bahayanya Bagi Kesehatan</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Penjelasan mengenai faktor pemicu dan bahaya inses bagi kesehatan fisik/psikologis.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Penjelasan faktor pemicu & bahaya inses.</p>
                                 <a href="https://www.alodokter.com/incest-dan-bahayanya-bagi-kesehatan" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Baca Artikel
                                 </a>
@@ -647,7 +615,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Video Diskusi (YouTube)</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Grup Inses (Psikolog Forensik)</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Diskusi mendalam mengenai fenomena dan bahaya grup 'fantasi sedarah'.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Diskusi fenomena grup 'fantasi sedarah'.</p>
                                 <a href="https://www.youtube.com/watch?v=t_rd6WZ9owQ" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Tonton Video
                                 </a>
@@ -661,7 +629,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Materi Internal (PDF)</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Bahaya & Sanksi Rokok Ilegal</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Informasi mengenai bahaya, dampak, serta sanksi hukum peredaran rokok ilegal.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Info bahaya & sanksi rokok ilegal.</p>
                                 <a href="https://drive.google.com/file/d/18Fb8OAK5fqhADVemnUyCAKueJTQlSl4f/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Baca Materi
                                 </a>
@@ -669,7 +637,7 @@
                             <div class="material-card flex flex-col bg-gray-50 p-6 border border-gray-200">
                                 <p class="text-sm font-semibold text-blue-600 mb-1">Materi Internal (PDF)</p>
                                 <h4 class="font-bold text-gray-800 mb-2">Kenakalan Remaja - Remaja Hebat</h4>
-                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Membahas cara menjadi remaja hebat tanpa terjerumus kenakalan.</p>
+                                <p class="text-gray-600 text-sm mb-4 leading-relaxed">Membahas cara menjadi remaja hebat.</p>
                                 <a href="https://drive.google.com/file/d/1bUCm2GTkAOot1Z-GcsybgRvJaHrSrcng/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full md:w-auto mt-auto text-center shadow-md">
                                     Baca Materi
                                 </a>
@@ -695,18 +663,19 @@
                             <h3 class="font-bold text-lg section-title mb-2">JPPA (Jaringan Peduli Perempuan & Anak)</h3>
                             <p class="text-gray-600 text-sm mb-4 leading-relaxed">Pendampingan korban kekerasan perempuan dan anak.</p>
                         </div>
-                        <button data-number="088228961516" class="copy-button brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 inline-block w-full sm:w-auto mt-auto shadow-md">
+                        <!-- Hybrid Smart Button -->
+                        <a href="tel:088228961516" data-number="088228961516" class="smart-contact-btn brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 inline-block w-full sm:w-auto mt-auto shadow-md">
                             Salin No - 088228961516
-                        </button>
+                        </a>
                     </div>
                     <div class="contact-card bg-white p-6 text-center flex flex-col justify-between" data-aos="fade-up" data-aos-delay="200">
                         <div>
                             <h3 class="font-bold text-lg section-title mb-2">Garpu Perak</h3>
                             <p class="text-gray-600 text-sm mb-4 leading-relaxed">Bantuan hukum dan advokasi untuk masyarakat.</p>
                         </div>
-                        <button data-number="08562706408" class="copy-button brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 inline-block w-full sm:w-auto mt-auto shadow-md">
+                         <a href="tel:08562706408" data-number="08562706408" class="smart-contact-btn brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 inline-block w-full sm:w-auto mt-auto shadow-md">
                             Salin No - 08562706408
-                        </button>
+                        </a>
                     </div>
                     <div class="contact-card bg-white p-6 text-center flex flex-col justify-between" data-aos="fade-up" data-aos-delay="300">
                         <div>
@@ -714,10 +683,10 @@
                             <p class="text-gray-600 text-sm mb-4 leading-relaxed">Layanan pengaduan dan perlindungan kepolisian.</p>
                         </div>
                         <div class="mt-auto space-y-2">
-                             <button data-number="0246715632" class="copy-button brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full shadow-md">
+                             <a href="tel:0246715632" data-number="0246715632" class="smart-contact-btn brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full shadow-md">
                                 Salin No - (024) 6715632
-                            </button>
-                            <a href="https://restabessmg.jateng.polri.go.id/polsek-semarang-timur/" target="_blank" rel="noopener noreferrer" class="website-button font-semibold px-6 py-2 rounded-lg hover:bg-blue-50 transition duration-300 w-full shadow-md">
+                            </a>
+                            <a href="https://restabessmg.jateng.polri.go.id/polsek-semarang-timur/" target="_blank" rel="noopener noreferrer" class="website-button font-semibold px-6 py-2 rounded-lg transition duration-300 w-full shadow-md">
                                 Kunjungi Website
                             </a>
                         </div>
@@ -727,18 +696,18 @@
                             <h3 class="font-bold text-lg section-title mb-2">Pekerja Sosial Masyarakat</h3>
                             <p class="text-gray-600 text-sm mb-4 leading-relaxed">Konseling dan bantuan sosial di tingkat kelurahan.</p>
                         </div>
-                        <button data-number="085101984212" class="copy-button brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 inline-block w-full sm:w-auto mt-auto shadow-md">
+                        <a href="tel:085101984212" data-number="085101984212" class="smart-contact-btn brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 inline-block w-full sm:w-auto mt-auto shadow-md">
                            Salin No - 085101984212
-                        </button>
+                        </a>
                     </div>
                     <div class="contact-card bg-white p-6 text-center flex flex-col justify-between" data-aos="fade-up" data-aos-delay="500">
                          <div>
                             <h3 class="font-bold text-lg section-title mb-2">Karang Taruna</h3>
                             <p class="text-gray-600 text-sm mb-4 leading-relaxed">Wadah pengembangan generasi muda dan sosial.</p>
                         </div>
-                        <button data-number="081325912001" class="copy-button brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 inline-block w-full sm:w-auto mt-auto shadow-md">
+                        <a href="tel:081325912001" data-number="081325912001" class="smart-contact-btn brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 inline-block w-full sm:w-auto mt-auto shadow-md">
                            Salin No - 081325912001
-                        </button>
+                        </a>
                     </div>
                     <div class="contact-card bg-white p-6 text-center flex flex-col justify-between" data-aos="fade-up" data-aos-delay="600">
                          <div>
@@ -746,14 +715,66 @@
                             <p class="text-gray-600 text-sm mb-4 leading-relaxed">Layanan sosial terpadu dari pemerintah kota.</p>
                          </div>
                          <div class="mt-auto space-y-2">
-                             <button data-number="0243547528" class="copy-button brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full shadow-md">
+                             <a href="tel:0243547528" data-number="0243547528" class="smart-contact-btn brand-bg-main text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300 w-full shadow-md">
                                 Salin No - (024) 3547528
-                            </button>
-                             <a href="https://dinsos.semarangkota.go.id/" target="_blank" rel="noopener noreferrer" class="website-button font-semibold px-6 py-2 rounded-lg hover:bg-blue-50 transition duration-300 w-full shadow-md">
+                            </a>
+                             <a href="https://dinsos.semarangkota.go.id/" target="_blank" rel="noopener noreferrer" class="website-button font-semibold px-6 py-2 rounded-lg transition duration-300 w-full shadow-md">
                                 Kunjungi Website
                             </a>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- NEW SECTION: PENGADUAN -->
+        <section id="pengaduan" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12" data-aos="fade-up">
+                    <h2 class="text-3xl md:text-4xl font-bold section-title">Layanan Pengaduan & Data Kasus</h2>
+                    <p class="text-gray-600 mt-2 max-w-2xl mx-auto leading-relaxed tracking-wide">Sampaikan laporan Anda secara aman. Kami juga menyajikan data statistik kasus untuk transparansi dan edukasi.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+                    
+                    <!-- Kolom Kiri: Form Pengaduan -->
+                    <div class="bg-blue-50 rounded-xl p-6 border border-blue-200 shadow-lg" data-aos="fade-right">
+                        <h3 class="text-xl font-bold text-blue-800 mb-4 flex items-center">
+                            <span class="text-2xl mr-2">📝</span> Formulir Pengaduan
+                        </h3>
+                        <p class="text-sm text-blue-700 mb-6">Silakan isi formulir di bawah ini. Identitas Anda akan kami jaga kerahasiaannya.</p>
+                        
+                        <!-- GOOGLE FORM EMBED -->
+                        <div class="w-full h-[500px] bg-white rounded-lg overflow-hidden shadow-inner">
+                            <iframe 
+                                src="https://docs.google.com/forms/d/e/1FAIpQLSfwfcvXEJhH7VYqMLCChqLiGbDjonmJwiJvsFaovDW_RH4v_w/viewform?embedded=true" 
+                                width="100%" 
+                                height="100%" 
+                                frameborder="0" 
+                                marginheight="0" 
+                                marginwidth="0">
+                                Memuat formulir...
+                            </iframe>
+                        </div>
+                    </div>
+
+                    <!-- Kolom Kanan: Statistik Kasus -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-lg" data-aos="fade-left">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                            <span class="text-2xl mr-2">📊</span> Statistik Laporan Masuk
+                        </h3>
+                        <p class="text-sm text-gray-600 mb-6">Grafik ini menunjukkan Jumlah Laporan berdasarkan Jenis Kasus yang masuk.</p>
+                        
+                        <!-- CHART CONTAINER -->
+                        <div class="relative h-[300px] w-full">
+                            <canvas id="casesChart"></canvas>
+                        </div>
+                        
+                        <div class="mt-6 bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-sm text-yellow-800">
+                            <strong>Catatan:</strong> Data di atas diperbarui secara berkala dari laporan yang masuk dan terverifikasi.
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>
@@ -767,7 +788,7 @@
                 </div>
                 <div class="grid grid-cols-1 gap-12 max-w-2xl mx-auto">
                     <div class="flex flex-col items-center" data-aos="fade-up" data-aos-delay="100">
-                        <h3 class="text-lg font-semibold text-center section-title mb-4">Kantor Kecamatan (Lantai 2) <br><small>(PSM, JPPA, Karang Taruna, Garpu Perak)</small></h3>
+                        <h3 class="text-lg font-semibold text-center section-title mb-4">Kantor Kecamatan (Lantai 2) <br><small class="text-gray-500">(PSM, JPPA, Karang Taruna, Garpu Perak)</small></h3>
                         <div class="map-container shadow-xl w-full">
                             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.203678536067!2d110.43912607499703!3d-6.98522209301594!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e708cdd6240277d%3A0xe6a5d46a81335091!2sKantor%20Kecamatan%20Semarang%20Timur!5e0!3m2!1sen!2sid!4v1729570141697!5m2!1sen!2sid" 
                                     allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -840,8 +861,7 @@
     <!-- Footer -->
     <footer class="footer-gradient text-white py-8">
         <div class="container mx-auto px-6 text-center">
-             <!-- Adjusted layout for share buttons -->
-            <div class="mb-4 flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-2"> 
+             <div class="mb-4 flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-2"> 
                 <span class="text-gray-300 text-sm mr-2 mb-2 sm:mb-0">Bagikan halaman ini:</span>
                 <div class="flex flex-col sm:flex-row items-center">
                     <a href="#" id="share-wa" class="share-button share-wa" target="_blank" rel="noopener noreferrer">
@@ -877,156 +897,190 @@
 
             // Navbar Scroll Effect
             const header = document.getElementById('header');
-            if (header) { // Check if header exists
-                 // Set initial state based on scroll position on load
-                 if (window.scrollY > 50) { 
-                    header.classList.add('scrolled');
-                 } else {
-                     header.classList.remove('scrolled');
-                 }
-                 // Add scroll listener
+            if (header) { 
+                 if (window.scrollY > 50) { header.classList.add('scrolled'); } 
+                 else { header.classList.remove('scrolled'); }
                  window.addEventListener('scroll', () => {
-                    if (window.scrollY > 50) { 
-                        header.classList.add('scrolled');
-                    } else {
-                        header.classList.remove('scrolled');
-                    }
+                    if (window.scrollY > 50) { header.classList.add('scrolled'); } 
+                    else { header.classList.remove('scrolled'); }
                 });
             }
 
-
-            // --- Existing JS ---
+            // --- Share Buttons ---
             const currentUrl = window.location.href; 
-            const pageTitle = document.title; 
             const shareText = encodeURIComponent(`Lihat Portal ASA - Informasi & Bantuan Isu Sosial Semarang Timur: ${currentUrl}`);
-
-            // Update Share Button Links
             const shareWaButton = document.getElementById('share-wa');
-            if (shareWaButton) { 
-                shareWaButton.href = `https://wa.me/?text=${shareText}`;
-            } else {
-                console.error("Element with ID 'share-wa' not found."); 
-            }
-            
+            if (shareWaButton) { shareWaButton.href = `https://wa.me/?text=${shareText}`; } 
             const shareFbButton = document.getElementById('share-fb');
-             if (shareFbButton) { 
-                shareFbButton.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
-             } else {
-                 console.error("Element with ID 'share-fb' not found."); 
-             }
+            if (shareFbButton) { shareFbButton.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`; } 
 
-            // Mobile Menu Toggle
+            // --- Mobile Menu ---
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
              if (mobileMenuButton && mobileMenu) { 
-                mobileMenuButton.addEventListener('click', () => {
-                    mobileMenu.classList.toggle('hidden');
-                });
-            }
-            
-            // Close mobile menu when a link is clicked
-            document.querySelectorAll('#mobile-menu a, nav a').forEach(link => { 
-                link.addEventListener('click', () => {
-                     if (mobileMenu) { 
-                        mobileMenu.classList.add('hidden'); 
-                     }
-                });
-            });
+                mobileMenuButton.addEventListener('click', () => { mobileMenu.classList.toggle('hidden'); });
+             }
+             document.querySelectorAll('#mobile-menu a, nav a').forEach(link => { 
+                link.addEventListener('click', () => { if (mobileMenu) { mobileMenu.classList.add('hidden'); } });
+             });
 
-            // Accordion Toggle
+            // --- Accordion ---
             const accordionToggles = document.querySelectorAll('.accordion-toggle');
             accordionToggles.forEach(toggle => {
                 const triggerArea = toggle.closest('.isu-card-trigger-area'); 
                 if (!triggerArea) return; 
                 const content = triggerArea.nextElementSibling; 
                 if (!content || !content.classList.contains('accordion-content')) return; 
-
                 triggerArea.addEventListener('click', () => { 
                     const isOpen = content.classList.contains('open');
                     content.classList.toggle('open');
                     const button = triggerArea.querySelector('.accordion-toggle'); 
-                    if (content.classList.contains('open')) {
-                         button.innerHTML = 'Lebih sedikit &larr;';
-                    } else {
-                        button.innerHTML = 'Selengkapnya &rarr;';
-                    }
+                    button.innerHTML = content.classList.contains('open') ? 'Lebih sedikit &larr;' : 'Selengkapnya &rarr;';
                 });
             });
             
-            // Copy to Clipboard
-            const copyButtons = document.querySelectorAll('.copy-button');
-            copyButtons.forEach(button => {
-                const originalText = button.innerHTML; 
-                
-                button.addEventListener('click', () => {
-                    const numberToCopy = button.dataset.number;
-                    if (!numberToCopy) return; 
+            // --- Smart Contact Buttons (Hybrid Copy/Call) ---
+            // Helper to check if desktop (simple width check)
+            function isDesktop() {
+                return window.matchMedia("(min-width: 768px)").matches;
+            }
 
-                    const textarea = document.createElement('textarea');
-                    textarea.value = numberToCopy;
-                    textarea.style.position = 'absolute';
-                    textarea.style.left = '-9999px';
-                    document.body.appendChild(textarea);
-                    textarea.select();
-                    
-                    try {
-                        document.execCommand('copy');
-                        button.innerHTML = 'Nomor Tersalin!';
-                        button.classList.add('bg-green-500', 'hover:bg-green-600');
-                        button.classList.remove('brand-bg-main', 'hover:bg-blue-600', 'bg-red-500', 'hover:bg-red-600'); 
-                        if (button.classList.contains('website-button')) {
-                            button.classList.remove('website-button'); 
+            const contactButtons = document.querySelectorAll('.smart-contact-btn');
+            contactButtons.forEach(btn => {
+                // Store original text for reverting later
+                const originalText = btn.innerHTML; 
+                const numberToCopy = btn.dataset.number;
+                const isEmergencyButton = originalText.includes('Polsek');
+
+                btn.addEventListener('click', (e) => {
+                    // If Desktop -> Prevent default call action and Copy instead
+                    if (isDesktop()) {
+                        e.preventDefault(); 
+                        
+                        if (!numberToCopy) return;
+
+                        // Copy logic
+                        const textarea = document.createElement('textarea');
+                        textarea.value = numberToCopy;
+                        textarea.style.position = 'absolute'; 
+                        textarea.style.left = '-9999px';
+                        document.body.appendChild(textarea);
+                        textarea.select();
+                        
+                        try {
+                            document.execCommand('copy');
+                            btn.innerHTML = 'Nomor Tersalin!';
+                            // Add feedback styles
+                            btn.classList.add('copied'); 
+                            btn.classList.remove('brand-bg-main', 'hover:bg-blue-600', 'bg-red-500', 'hover:bg-red-600');
+                            
+                            // Revert after 2 seconds
+                            setTimeout(() => {
+                                btn.innerHTML = originalText;
+                                btn.classList.remove('copied'); 
+                                // Restore original color logic based on context (simple check)
+                                if (isEmergencyButton) {
+                                     btn.classList.add('bg-red-500', 'hover:bg-red-600');
+                                } else {
+                                     btn.classList.add('brand-bg-main', 'hover:bg-blue-600');
+                                }
+                            }, 2000);
+                        } catch (err) {
+                            console.error('Gagal menyalin', err);
+                        } finally {
+                            document.body.removeChild(textarea);
                         }
-                    } catch (err) {
-                        console.error('Gagal menyalin nomor:', err);
-                        button.innerHTML = 'Gagal Menyalin';
-                        setTimeout(() => {
-                            button.innerHTML = originalText;
-                            button.classList.remove('bg-green-500', 'hover:bg-green-600'); 
-                            if (originalText.includes('Polsek')) {
-                                 button.classList.add('bg-red-500', 'hover:bg-red-600');
-                            } else {
-                                button.classList.add('brand-bg-main', 'hover:bg-blue-600');
-                            }
-                         }, 1500); 
-                         return; 
-                    } finally {
-                        document.body.removeChild(textarea); 
                     }
-
-                    // Revert text after 2 seconds only on success
-                    setTimeout(() => {
-                        button.innerHTML = originalText;
-                        button.classList.remove('bg-green-500', 'hover:bg-green-600');
-                         if (originalText.includes('Polsek')) {
-                             button.classList.add('bg-red-500', 'hover:bg-red-600');
-                         } else {
-                            button.classList.add('brand-bg-main', 'hover:bg-blue-600');
-                         }
-                    }, 2000);
+                    // If Mobile -> Do nothing, let the href="tel:..." work naturally
                 });
             });
             
-            // Scroll to Top Button
+            // --- Scroll to Top ---
             const toTopButton = document.getElementById('to-top-button');
              if (toTopButton) { 
                 window.addEventListener('scroll', () => {
-                    if (window.scrollY > 400) {
-                        toTopButton.classList.remove('hidden');
-                    } else {
-                        toTopButton.classList.add('hidden');
+                    toTopButton.classList.toggle('hidden', window.scrollY <= 400);
+                });
+                toTopButton.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+            }
+
+            // --- CHART JS LOGIC (Updated to track Categories) ---
+            const ctx = document.getElementById('casesChart');
+            if (ctx) {
+                const chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Jumlah Laporan Berdasarkan Jenis Kasus',
+                            data: [],
+                            borderWidth: 1,
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)', 
+                            borderColor: 'rgb(59, 130, 246)',
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y', // Make it a horizontal bar chart for better label reading
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1 }
+                            }
+                        }
                     }
                 });
 
-                toTopButton.addEventListener('click', () => {
-                    window.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
+                // FETCH DATA FROM GOOGLE SHEET (CSV)
+                const sheetId = '1dsVUerN2viqFGjpMDgrrWzhQiefwWguPkbv8BJczGks';
+                const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
+                
+                fetch(sheetUrl)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.text();
+                    })
+                    .then(csvText => {
+                        // CSV Parsing: Handles the simple format outputted by Gviz
+                        const rows = csvText.split('\n').map(row => row.replace(/"/g, '').split(','));
+                        if (rows.length < 2) return; 
+
+                        const dataRows = rows.slice(1);
+                        const categoryCounts = {};
+                        
+                        // NOTE: Based on form structure (Column E/Index 4 is Jenis Kasus)
+                        const CASE_TYPE_COLUMN_INDEX = 4;
+                        
+                        // Ensure all known categories are initialized to zero
+                        const knownCategories = ["Perundungan (Bullying)", "Kekerasan Dalam Rumah Tangga (KDRT)", "Pelecehan / Kekerasan Seksual", "Kenakalan Remaja"];
+                        knownCategories.forEach(cat => categoryCounts[cat] = 0);
+
+                        dataRows.forEach(row => {
+                            const rawCaseType = row[CASE_TYPE_COLUMN_INDEX]; 
+                            if (rawCaseType) {
+                                const caseType = rawCaseType.trim();
+                                // Increment count
+                                categoryCounts[caseType] = (categoryCounts[caseType] || 0) + 1;
+                            }
+                        });
+
+                        // Prepare final data: Filter out categories that didn't appear unless they are main ones
+                        const finalLabels = Object.keys(categoryCounts).filter(label => categoryCounts[label] > 0 || knownCategories.includes(label));
+                        const finalData = finalLabels.map(label => categoryCounts[label]);
+
+                        if (finalLabels.length > 0) {
+                            chart.data.labels = finalLabels;
+                            chart.data.datasets[0].data = finalData;
+                            chart.update();
+                        }
+                    })
+                    .catch(error => {
+                        console.log('Fetch error or Sheet empty:', error);
                     });
-                });
             }
+
         });
     </script>
 </body>
 </html>
-
